@@ -48,12 +48,14 @@ wrong = []
 global turns
 turns = 0
 
+continuer = True
+
 #Game loop
-while True:
+while continuer:
     for event in pygame.event.get():
         #Detect quit
         if event.type == pygame.QUIT:
-            pygame.quit()
+            continuer = False
 
     #Check for mouse click
     pressed = list(pygame.mouse.get_pressed())
@@ -75,13 +77,13 @@ while True:
 
                         if has_instance == False:
                             exposed.append([i, j])
-                            
+
     if len(exposed) == 2:
         turns += 1
         if CARD_VAL_GRID[exposed[0][0]][exposed[0][1]] == CARD_VAL_GRID[exposed[1][0]][exposed[1][1]]:
             matched.extend(exposed)
             exposed.clear()
-            
+
         else:
             wrong.extend(exposed)
             exposed.clear()
@@ -93,7 +95,7 @@ while True:
     for i in range(ROWS):
         for j in range(COLS):
             pygame.draw.rect(DISPLAY, (255, 255, 255), CARD_GRID[i][j])
-            
+
     #Draw numbers
     if exposed:
         for i in exposed:
@@ -126,8 +128,11 @@ while True:
         DISPLAY.blit(win, (40, 105))
         pygame.display.flip()
         break
-    
+
     pygame.display.flip()
     if wrong:
-        time.sleep(1)
+        time.sleep(0.5)
         wrong.clear()
+
+time.sleep(1)
+pygame.quit()
