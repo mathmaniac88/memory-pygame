@@ -115,8 +115,8 @@ while continuer:
 
     #Check win
     if len(matched) == 20:
-        DISPLAY.fill(BLACK)
-        win = ARIAL_200.render("You win!", True, GREEN)
+        DISPLAY.fill(WHITE)
+        win = ARIAL_200.render("You win!", True, RED)
         DISPLAY.blit(win, (40, 105))
         pygame.display.flip()
         break
