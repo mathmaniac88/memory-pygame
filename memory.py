@@ -104,7 +104,7 @@ while continuer:
     if wrong:
         for i in wrong:
             text = str(CARD_VAL_GRID[i[0]][i[1]])
-            render = ARIAL_50.render(text, True, RED)
+            render = ARIAL_50.render(text, True, RED) 
             DISPLAY.blit(render, (CARD_GRID[i[0]][i[1]].x + CARD_HOR_PAD, CARD_GRID[i[0]][i[1]].y + CARD_VER_PAD))
 
     #Draw other stuff
