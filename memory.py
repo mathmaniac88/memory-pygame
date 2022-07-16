@@ -25,20 +25,18 @@ COLS = 5
 cards = [i for i in range(10) for j in range(2)]
 random.shuffle(cards)
 CARD_VAL_GRID = [cards[i*len(cards) // ROWS:(i+1)*len(cards) // ROWS] for i in range(ROWS)]
-CARD_GRID = [[] for i in range(ROWS)]
+CARD_GRID = [[] for _ in range(ROWS)]
 for i in range(ROWS):
-    if i == 0:
-        for j in range(COLS):
+    for j in range(COLS):
+        if i == 0:
             if j == 0:
                 CARD_GRID[i].append(pygame.Rect(CARD_MARGIN, CARD_MARGIN, CARD_LEN, CARD_LEN))
             else:
                 CARD_GRID[i].append(pygame.Rect(CARD_GRID[i][j-1].x + CARD_LEN + CARD_MARGIN, CARD_MARGIN, CARD_LEN, CARD_LEN))
-    else:
-        for j in range(COLS):
-            if j == 0:
-                CARD_GRID[i].append(pygame.Rect(CARD_MARGIN, CARD_GRID[i-1][0].y + CARD_LEN + CARD_MARGIN, CARD_LEN, CARD_LEN))
-            else:
-                CARD_GRID[i].append(pygame.Rect(CARD_GRID[i][j-1].x + CARD_LEN + CARD_MARGIN, CARD_GRID[i-1][0].y + CARD_LEN + CARD_MARGIN, CARD_LEN, CARD_LEN))
+        elif j == 0:
+            CARD_GRID[i].append(pygame.Rect(CARD_MARGIN, CARD_GRID[i-1][0].y + CARD_LEN + CARD_MARGIN, CARD_LEN, CARD_LEN))
+        else:
+            CARD_GRID[i].append(pygame.Rect(CARD_GRID[i][j-1].x + CARD_LEN + CARD_MARGIN, CARD_GRID[i-1][0].y + CARD_LEN + CARD_MARGIN, CARD_LEN, CARD_LEN))
 global exposed
 exposed = []
 global matched
@@ -48,12 +46,14 @@ wrong = []
 global turns
 turns = 0
 
+continuer = True
+
 #Game loop
-while True:
+while continuer:
     for event in pygame.event.get():
         #Detect quit
         if event.type == pygame.QUIT:
-            pygame.quit()
+            continuer = False
 
     #Check for mouse click
     pressed = list(pygame.mouse.get_pressed())
@@ -64,27 +64,21 @@ while True:
                     mouse_pos = list(pygame.mouse.get_pos())
                     if mouse_pos[0] >= CARD_GRID[i][j].x and mouse_pos[1] >= CARD_GRID[i][j].y and mouse_pos[0] <= CARD_GRID[i][j].x + CARD_LEN and mouse_pos[1] <= CARD_GRID[i][j].y + CARD_LEN:
                         global has_instance
-                        has_instance = False
-                        for k in range(len(exposed)):
-                            if exposed[k] == [i, j]:
+                        has_instance = [i, j] in exposed
+                        for item_ in matched:
+                            if item_ == [i, j]:
                                 has_instance = True
 
-                        for k in range(len(matched)):
-                            if matched[k] == [i, j]:
-                                has_instance = True
-
-                        if has_instance == False:
+                        if not has_instance:
                             exposed.append([i, j])
-                            
+
     if len(exposed) == 2:
         turns += 1
         if CARD_VAL_GRID[exposed[0][0]][exposed[0][1]] == CARD_VAL_GRID[exposed[1][0]][exposed[1][1]]:
             matched.extend(exposed)
-            exposed.clear()
-            
         else:
             wrong.extend(exposed)
-            exposed.clear()
+        exposed.clear()
 
     #Clear screen
     DISPLAY.fill(BLACK)
@@ -93,7 +87,7 @@ while True:
     for i in range(ROWS):
         for j in range(COLS):
             pygame.draw.rect(DISPLAY, (255, 255, 255), CARD_GRID[i][j])
-            
+
     #Draw numbers
     if exposed:
         for i in exposed:
@@ -116,18 +110,21 @@ while True:
     #Draw other stuff
     title = ARIAL_35.render("Memory", True, WHITE)
     DISPLAY.blit(title, (570, 10))
-    turn_text = ARIAL_20.render("Turns: " + str(turns), True, WHITE)
+    turn_text = ARIAL_20.render(f"Turns: {str(turns)}", True, WHITE)
     DISPLAY.blit(turn_text, (580, 75))
 
     #Check win
     if len(matched) == 20:
-        DISPLAY.fill(BLACK)
-        win = ARIAL_200.render("You win!", True, GREEN)
+        DISPLAY.fill(WHITE)
+        win = ARIAL_200.render("You win!", True, RED)
         DISPLAY.blit(win, (40, 105))
         pygame.display.flip()
         break
-    
+
     pygame.display.flip()
     if wrong:
-        time.sleep(1)
+        time.sleep(0.5)
         wrong.clear()
+
+time.sleep(1)
+pygame.quit()
