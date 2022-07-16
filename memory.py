@@ -25,7 +25,7 @@ COLS = 5
 cards = [i for i in range(10) for j in range(2)]
 random.shuffle(cards)
 CARD_VAL_GRID = [cards[i*len(cards) // ROWS:(i+1)*len(cards) // ROWS] for i in range(ROWS)]
-CARD_GRID = [[] for i in range(ROWS)]
+CARD_GRID = [[] for _ in range(ROWS)]
 for i in range(ROWS):
     for j in range(COLS):
         if i == 0:
@@ -64,7 +64,7 @@ while continuer:
                     mouse_pos = list(pygame.mouse.get_pos())
                     if mouse_pos[0] >= CARD_GRID[i][j].x and mouse_pos[1] >= CARD_GRID[i][j].y and mouse_pos[0] <= CARD_GRID[i][j].x + CARD_LEN and mouse_pos[1] <= CARD_GRID[i][j].y + CARD_LEN:
                         global has_instance
-                        has_instance = any(item == [i, j] for item in exposed)
+                        has_instance = [i, j] in exposed
                         for item_ in matched:
                             if item_ == [i, j]:
                                 has_instance = True
@@ -110,7 +110,7 @@ while continuer:
     #Draw other stuff
     title = ARIAL_35.render("Memory", True, WHITE)
     DISPLAY.blit(title, (570, 10))
-    turn_text = ARIAL_20.render("Turns: " + str(turns), True, WHITE)
+    turn_text = ARIAL_20.render(f"Turns: {str(turns)}", True, WHITE)
     DISPLAY.blit(turn_text, (580, 75))
 
     #Check win
